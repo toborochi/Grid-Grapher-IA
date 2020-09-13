@@ -14,3 +14,7 @@ Existen los siguientes ejemplos:
 	<img width="350"  src="Screenshots/screenshot.png" alt="screen">
 </div>
 
+
+## Teclas
+* <kbd>🡐 </kbd> <kbd>🡒</kbd> Cambiar entre **Piso, Pared, Punto Partida** y **Punto Llegada**.
+* <kbd>S</kbd> Mostrar números.
