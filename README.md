@@ -20,7 +20,8 @@ Algunas de las implementaciones hechas en el proyecto (_SH_: Sin Heurística, _C
 
 
 ## Teclas
-* <kbd>🡐 </kbd> <kbd>🡒</kbd> Cambiar entre **Piso, Pared, Punto Partida** y **Punto Llegada**.
+* <kbd>←</kbd> <kbd>→</kbd> Cambiar entre **Piso, Pared, Punto Partida** y **Punto Llegada**.
+* <kbd>↑</kbd> <kbd>↓</kbd> Número de respuestas (-1 para ver todas).
 * <kbd>S</kbd> Mostrar números.
 
 ## Features
