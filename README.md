@@ -11,5 +11,5 @@ Existen los siguientes ejemplos:
 
 
 <div align="center">
-	<img width="250"  src="Screenshots/screenshot.png" alt="screen">
+	<img width="350"  src="Screenshots/screenshot.png" alt="screen">
 </div>
