@@ -14,6 +14,3 @@ Existen los siguientes ejemplos:
 	<img width="350"  src="Screenshots/screenshot.png" alt="screen">
 </div>
 
-<div align="center">
-	<img width="250"  src="Screenshots/gif.gif" alt="screen">
-</div>
