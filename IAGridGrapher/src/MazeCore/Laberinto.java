@@ -54,7 +54,7 @@ public class Laberinto {
 
         // laberintoA(m, i, j, 1,L);
         // laberintoB(m, i, j, 1,L);
-         laberintoC(m, i, j, ifin, jfin, 1, L);
+        // laberintoC(m, i, j, ifin, jfin, 1, L);
         
         // torreA(m, i, j, 1,L);
         // torreB(m, i, j, 1,L);
@@ -67,6 +67,8 @@ public class Laberinto {
         // reinaA(m, i, j, 1,L);
         // reinaB(m, i, j, 1,L);
         // reinaC(m, i, j, ifin, jfin, 1, L);
+        
+        laberintoHeuristica(m, i, j, ifin, jfin, 1, L);
         
         System.out.println("InicioX: " + i);
         System.out.println("InicioY: " + j);
@@ -82,6 +84,10 @@ public class Laberinto {
                 && j >= 0 && j < m[i].length && (m[i][j] == 0);
     }
 
+    /* //////////////////////////////////////////////////////////////////////////////
+     Problemas sin Heuristica
+    ///////////////////////////////////////////////////////////////////////////////*/ 
+    
     
     // LABERINTO
     private LinkedList<Regla> reglasAplicables(int m[][], int i, int j) {
@@ -636,6 +642,63 @@ public class Laberinto {
         while (!L1.isEmpty()) {
             Regla R = L1.removeFirst();
             reinaC(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+            m[R.fil][R.col] = 0;
+
+        }
+
+        // ANADIR ESTO
+        acum.removeLast();
+    }
+     
+     /* //////////////////////////////////////////////////////////////////////////////
+     Problemas con Heuristica
+     ///////////////////////////////////////////////////////////////////////////////*/ 
+     
+     public static Regla mejorRegla(LinkedList<Regla> L,int ifin,int jfin){
+        int k = 0;
+        int minimo = Integer.MAX_VALUE;
+        for(int i=0;i<L.size();++i){
+            int ival = L.get(i).fil;
+            int jval = L.get(i).col;
+            int m = manhattan(ival, jval, ifin, jfin);
+            if(m<minimo){
+                minimo=m;
+                k=i;
+            }
+        }
+        return L.remove(k);
+     }
+     
+     private static int manhattan(int a,int b,int c,int d){
+         return Math.abs(c-a)+Math.abs(d-b);
+     }
+     
+      private void laberintoHeuristica(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
+        }
+
+        // ANADIR ESTO
+        acum.addLast(new Point(i, j));
+
+        m[i][j] = paso;
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+
+        }
+
+        LinkedList<Regla> L1 = reglasAplicables(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorRegla(L1,ifin,jfin);
+            laberintoHeuristica(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
             m[R.fil][R.col] = 0;
 
         }
