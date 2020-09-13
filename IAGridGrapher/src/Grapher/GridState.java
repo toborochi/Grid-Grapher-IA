@@ -263,7 +263,7 @@ public class GridState implements State {
                         sprite3.render(g, (double) 64 * i, (double) 64 * j, 0);
                     }else{
                        
-                        if(startP.x==i && startP.y==j){
+                        if(startP.x==j && startP.y==i){
                             //System.out.println(""+startP.x+","+startP.y);
                             //System.out.println(""+i+","+j);
                             pisos.get(0).render(g, (double) 64 * i, (double) 64 * j, 0);
