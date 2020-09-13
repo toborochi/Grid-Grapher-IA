@@ -11,6 +11,11 @@ public class Laberinto {
     public LinkedList<int[][]> results = new LinkedList<>();
     public LinkedList<Integer> steps = new LinkedList<>();
     int c = 0;
+    public int answers = 0;
+
+    public void setAnswers(int m) {
+        answers = m;
+    }
 
     private void mostrar(int m[][]) {
         for (int i = 0; i < m.length; ++i) {
@@ -20,11 +25,14 @@ public class Laberinto {
             System.out.println("");
         }
     }
-    
+
     int floodSize = 0;
-    private void flood(int m[][],int i,int j){
-        if(!posValida(m, i, j)) return;
-        m[i][j]=1;
+
+    private void flood(int m[][], int i, int j) {
+        if (!(m[i][j] == 0 && i >= 0 && i < m.length && j >= 0 && j < m[0].length)) {
+            return;
+        }
+        m[i][j] = 1;
         floodSize++;
         LinkedList<Regla> L1 = reglasAplicables(m, i, j);
         while (!L1.isEmpty()) {
@@ -32,17 +40,18 @@ public class Laberinto {
             flood(m, R.fil, R.col);
         }
 
-        
     }
 
     public Queue<Point> Instrucciones(int m[][], int i, int j, int ifin, int jfin) {
 
-        floodSize=0;
+        m[i][j] = 0;
+
+        floodSize = 0;
         int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
-        flood(copy,i,j);
-        
-        System.out.println("Tamano Area: "+floodSize);
-        
+        flood(copy, i, j);
+
+        System.out.println("Tamano Area: " + floodSize);
+
         m[i][j] = 0;
 
         LinkedList<Point> L = new LinkedList<>();
@@ -55,21 +64,18 @@ public class Laberinto {
         // laberintoA(m, i, j, 1,L);
         // laberintoB(m, i, j, 1,L);
         // laberintoC(m, i, j, ifin, jfin, 1, L);
-        
         // torreA(m, i, j, 1,L);
         // torreB(m, i, j, 1,L);
         // torreC(m, i, j, ifin, jfin, 1, L);
-        
         // alfilA(m, i, j, 1,L);
         // alfilB(m, i, j, 1,L);
         // alfilC(m, i, j, ifin, jfin, 1, L);
-        
         // reinaA(m, i, j, 1,L);
         // reinaB(m, i, j, 1,L);
         // reinaC(m, i, j, ifin, jfin, 1, L);
-        
-        laberintoHeuristica(m, i, j, ifin, jfin, 1, L);
-        
+        // laberintoHeuristica(m, i, j, ifin, jfin, 1, L);
+        laberintoHeuristica2(m, i, j, ifin, jfin, 1, L);
+
         System.out.println("InicioX: " + i);
         System.out.println("InicioY: " + j);
         System.out.println("FinY: " + ifin);
@@ -80,15 +86,14 @@ public class Laberinto {
     }
 
     public boolean posValida(int m[][], int i, int j) {
+
         return i >= 0 && i < m.length
                 && j >= 0 && j < m[i].length && (m[i][j] == 0);
     }
 
     /* //////////////////////////////////////////////////////////////////////////////
      Problemas sin Heuristica
-    ///////////////////////////////////////////////////////////////////////////////*/ 
-    
-    
+    ///////////////////////////////////////////////////////////////////////////////*/
     // LABERINTO
     private LinkedList<Regla> reglasAplicables(int m[][], int i, int j) {
         LinkedList<Regla> L1 = new LinkedList();
@@ -119,6 +124,7 @@ public class Laberinto {
         // ANADIR ESTO
         //mostrar(m);
         steps.add(paso);
+        c++;
         acum.addLast(new Point(i, j));
         int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
         results.add(copy);
@@ -127,11 +133,13 @@ public class Laberinto {
         }
 
         LinkedList<Regla> L1 = reglasAplicables(m, i, j);
-        while (!L1.isEmpty()) {
-            Regla R = L1.removeFirst();
-            laberintoA(m, R.fil, R.col, paso + 1, acum);
-            m[R.fil][R.col] = 0;
+        if (c < answers || answers == -1) {
+            while (!L1.isEmpty()) {
+                Regla R = L1.removeFirst();
+                laberintoA(m, R.fil, R.col, paso + 1, acum);
+                m[R.fil][R.col] = 0;
 
+            }
         }
 
         // ANADIR ESTO
@@ -151,7 +159,7 @@ public class Laberinto {
             // ANADIR ESTO
             //mostrar(m);
             steps.add(paso);
-            
+            c++;
             int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
             results.add(copy);
             for (int k = 0; k < acum.size(); ++k) {
@@ -159,11 +167,13 @@ public class Laberinto {
             }
         }
         LinkedList<Regla> L1 = reglasAplicables(m, i, j);
-        while (!L1.isEmpty()) {
-            Regla R = L1.removeFirst();
-            laberintoB(m, R.fil, R.col, paso + 1, acum);
-            m[R.fil][R.col] = 0;
+        if (c < answers || answers == -1) {
+            while (!L1.isEmpty()) {
+                Regla R = L1.removeFirst();
+                laberintoB(m, R.fil, R.col, paso + 1, acum);
+                m[R.fil][R.col] = 0;
 
+            }
         }
 
         // ANADIR ESTO
@@ -194,61 +204,57 @@ public class Laberinto {
         }
 
         LinkedList<Regla> L1 = reglasAplicables(m, i, j);
-        while (!L1.isEmpty()) {
-            Regla R = L1.removeFirst();
-            laberintoC(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
-            m[R.fil][R.col] = 0;
+        if (c < answers || answers == -1) {
+            while (!L1.isEmpty()) {
+                Regla R = L1.removeFirst();
+                laberintoC(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                m[R.fil][R.col] = 0;
 
+            }
         }
 
         // ANADIR ESTO
         acum.removeLast();
     }
-    
+
     // TORRE
-     private LinkedList<Regla> reglasAplicablesTorre(int m[][], int i, int j) {
+    private LinkedList<Regla> reglasAplicablesTorre(int m[][], int i, int j) {
         LinkedList<Regla> L1 = new LinkedList();
-        
-        int pi,pj;
-        
-        pi=i-1;
-        pj=j;
-        while(posValida(m, pi, pj)){
-            L1.add(new Regla(pi,pj));
+
+        int pi, pj;
+
+        pi = i - 1;
+        pj = j;
+        while (posValida(m, pi, pj)) {
+            L1.add(new Regla(pi, pj));
             pi--;
         }
-        
-        pi=i;
-        pj=j-1;
-        while(posValida(m, pi, pj)){
-            L1.add(new Regla(pi,pj));
+
+        pi = i;
+        pj = j - 1;
+        while (posValida(m, pi, pj)) {
+            L1.add(new Regla(pi, pj));
             pj--;
         }
-        
-        pi=i+1;
-        pj=j;
-        while(posValida(m, pi, pj)){
-            L1.add(new Regla(pi,pj));
+
+        pi = i + 1;
+        pj = j;
+        while (posValida(m, pi, pj)) {
+            L1.add(new Regla(pi, pj));
             pi++;
         }
-        
-        
-        
-        pi=i;
-        pj=j+1;
-        while(posValida(m, pi, pj)){
-            L1.add(new Regla(pi,pj));
+
+        pi = i;
+        pj = j + 1;
+        while (posValida(m, pi, pj)) {
+            L1.add(new Regla(pi, pj));
             pj++;
         }
-        
-        
-        
-        
 
         return L1;
     }
-     
-     // TODOS LOS CAMINOS POSIBLES
+
+    // TODOS LOS CAMINOS POSIBLES
     private void torreA(int m[][], int i, int j, int paso, LinkedList<Point> acum) {
 
         if (!posValida(m, i, j)) {
@@ -259,6 +265,7 @@ public class Laberinto {
         // ANADIR ESTO
         //mostrar(m);
         steps.add(paso);
+        c++;
         acum.addLast(new Point(i, j));
         int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
         results.add(copy);
@@ -267,17 +274,19 @@ public class Laberinto {
         }
 
         LinkedList<Regla> L1 = reglasAplicablesTorre(m, i, j);
-        while (!L1.isEmpty()) {
-            Regla R = L1.removeFirst();
-            torreA(m, R.fil, R.col, paso + 1, acum);
-            m[R.fil][R.col] = 0;
+        if (c < answers || answers == -1) {
+            while (!L1.isEmpty()) {
+                Regla R = L1.removeFirst();
+                torreA(m, R.fil, R.col, paso + 1, acum);
+                m[R.fil][R.col] = 0;
 
+            }
         }
 
         // ANADIR ESTO
         acum.removeLast();
     }
-    
+
     private void torreB(int m[][], int i, int j, int paso, LinkedList<Point> acum) {
 
         if (!posValida(m, i, j)) {
@@ -290,7 +299,7 @@ public class Laberinto {
             // ANADIR ESTO
             //mostrar(m);
             steps.add(paso);
-            
+            c++;
             int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
             results.add(copy);
             for (int k = 0; k < acum.size(); ++k) {
@@ -298,18 +307,19 @@ public class Laberinto {
             }
         }
         LinkedList<Regla> L1 = reglasAplicablesTorre(m, i, j);
-        while (!L1.isEmpty()) {
-            Regla R = L1.removeFirst();
-            torreB(m, R.fil, R.col, paso + 1, acum);
-            m[R.fil][R.col] = 0;
+        if (c < answers || answers == -1) {
+            while (!L1.isEmpty()) {
+                Regla R = L1.removeFirst();
+                torreB(m, R.fil, R.col, paso + 1, acum);
+                m[R.fil][R.col] = 0;
 
+            }
         }
 
         // ANADIR ESTO
         acum.removeLast();
     }
-    
-    
+
     private void torreC(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
 
         if (!posValida(m, i, j)) {
@@ -333,61 +343,61 @@ public class Laberinto {
         }
 
         LinkedList<Regla> L1 = reglasAplicablesTorre(m, i, j);
-        while (!L1.isEmpty()) {
-            Regla R = L1.removeFirst();
-            torreC(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
-            m[R.fil][R.col] = 0;
+        if (c < answers || answers == -1) {
+            while (!L1.isEmpty()) {
+                Regla R = L1.removeFirst();
+                torreC(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                m[R.fil][R.col] = 0;
 
+            }
         }
 
         // ANADIR ESTO
         acum.removeLast();
     }
-    
+
     // ALFIL
-     private LinkedList<Regla> reglasAplicablesAlfil(int m[][], int i, int j) {
+    private LinkedList<Regla> reglasAplicablesAlfil(int m[][], int i, int j) {
         LinkedList<Regla> L1 = new LinkedList();
-        
-        int pi,pj;
-        
-        pi=i-1;
-        pj=j-1;
-        while(posValida(m, pi, pj)){
-            L1.add(new Regla(pi,pj));
+
+        int pi, pj;
+
+        pi = i - 1;
+        pj = j - 1;
+        while (posValida(m, pi, pj)) {
+            L1.add(new Regla(pi, pj));
             pi--;
             pj--;
         }
-        
-        pi=i+1;
-        pj=j-1;
-        while(posValida(m, pi, pj)){
-            L1.add(new Regla(pi,pj));
+
+        pi = i + 1;
+        pj = j - 1;
+        while (posValida(m, pi, pj)) {
+            L1.add(new Regla(pi, pj));
             pi++;
             pj--;
         }
-        
-        pi=i+1;
-        pj=j+1;
-        while(posValida(m, pi, pj)){
-            L1.add(new Regla(pi,pj));
+
+        pi = i + 1;
+        pj = j + 1;
+        while (posValida(m, pi, pj)) {
+            L1.add(new Regla(pi, pj));
             pi++;
             pj++;
         }
-        
-        pi=i-1;
-        pj=j+1;
-        while(posValida(m, pi, pj)){
-            L1.add(new Regla(pi,pj));
+
+        pi = i - 1;
+        pj = j + 1;
+        while (posValida(m, pi, pj)) {
+            L1.add(new Regla(pi, pj));
             pi--;
             pj++;
         }
-        
-        
 
         return L1;
     }
-     
-      // TODOS LOS CAMINOS POSIBLES
+
+    // TODOS LOS CAMINOS POSIBLES
     private void alfilA(int m[][], int i, int j, int paso, LinkedList<Point> acum) {
 
         if (!posValida(m, i, j)) {
@@ -398,6 +408,7 @@ public class Laberinto {
         // ANADIR ESTO
         //mostrar(m);
         steps.add(paso);
+        c++;
         acum.addLast(new Point(i, j));
         int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
         results.add(copy);
@@ -406,17 +417,19 @@ public class Laberinto {
         }
 
         LinkedList<Regla> L1 = reglasAplicablesAlfil(m, i, j);
-        while (!L1.isEmpty()) {
-            Regla R = L1.removeFirst();
-            alfilA(m, R.fil, R.col, paso + 1, acum);
-            m[R.fil][R.col] = 0;
+        if (c < answers || answers == -1) {
+            while (!L1.isEmpty()) {
+                Regla R = L1.removeFirst();
+                alfilA(m, R.fil, R.col, paso + 1, acum);
+                m[R.fil][R.col] = 0;
 
+            }
         }
 
         // ANADIR ESTO
         acum.removeLast();
     }
-    
+
     // TODOS LOS CAMINOS QUE RECORREN TODAS LAS CELDAS
     private void alfilB(int m[][], int i, int j, int paso, LinkedList<Point> acum) {
 
@@ -430,7 +443,7 @@ public class Laberinto {
             // ANADIR ESTO
             //mostrar(m);
             steps.add(paso);
-            
+            c++;
             int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
             results.add(copy);
             for (int k = 0; k < acum.size(); ++k) {
@@ -438,11 +451,13 @@ public class Laberinto {
             }
         }
         LinkedList<Regla> L1 = reglasAplicablesAlfil(m, i, j);
-        while (!L1.isEmpty()) {
-            Regla R = L1.removeFirst();
-            alfilB(m, R.fil, R.col, paso + 1, acum);
-            m[R.fil][R.col] = 0;
+        if (c < answers || answers == -1) {
+            while (!L1.isEmpty()) {
+                Regla R = L1.removeFirst();
+                alfilB(m, R.fil, R.col, paso + 1, acum);
+                m[R.fil][R.col] = 0;
 
+            }
         }
 
         // ANADIR ESTO
@@ -473,89 +488,89 @@ public class Laberinto {
         }
 
         LinkedList<Regla> L1 = reglasAplicablesAlfil(m, i, j);
-        while (!L1.isEmpty()) {
-            Regla R = L1.removeFirst();
-            alfilC(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
-            m[R.fil][R.col] = 0;
+        if (c < answers || answers == -1) {
+            while (!L1.isEmpty()) {
+                Regla R = L1.removeFirst();
+                alfilC(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                m[R.fil][R.col] = 0;
 
+            }
         }
 
         // ANADIR ESTO
         acum.removeLast();
     }
-    
+
     // REINA
-     private LinkedList<Regla> reglasAplicablesReina(int m[][], int i, int j) {
+    private LinkedList<Regla> reglasAplicablesReina(int m[][], int i, int j) {
         LinkedList<Regla> L1 = new LinkedList();
-        
-        int pi,pj;
-        
-        pi=i-1;
-        pj=j;
-        while(posValida(m, pi, pj)){
-            L1.add(new Regla(pi,pj));
+
+        int pi, pj;
+
+        pi = i - 1;
+        pj = j;
+        while (posValida(m, pi, pj)) {
+            L1.add(new Regla(pi, pj));
             pi--;
         }
-        
-        pi=i-1;
-        pj=j-1;
-        while(posValida(m, pi, pj)){
-            L1.add(new Regla(pi,pj));
+
+        pi = i - 1;
+        pj = j - 1;
+        while (posValida(m, pi, pj)) {
+            L1.add(new Regla(pi, pj));
             pi--;
             pj--;
         }
-        
-        pi=i;
-        pj=j-1;
-        while(posValida(m, pi, pj)){
-            L1.add(new Regla(pi,pj));
+
+        pi = i;
+        pj = j - 1;
+        while (posValida(m, pi, pj)) {
+            L1.add(new Regla(pi, pj));
             pj--;
         }
-        
-        pi=i+1;
-        pj=j-1;
-        while(posValida(m, pi, pj)){
-            L1.add(new Regla(pi,pj));
+
+        pi = i + 1;
+        pj = j - 1;
+        while (posValida(m, pi, pj)) {
+            L1.add(new Regla(pi, pj));
             pi++;
             pj--;
         }
-        
-        pi=i+1;
-        pj=j;
-        while(posValida(m, pi, pj)){
-            L1.add(new Regla(pi,pj));
+
+        pi = i + 1;
+        pj = j;
+        while (posValida(m, pi, pj)) {
+            L1.add(new Regla(pi, pj));
             pi++;
         }
-        
-        pi=i+1;
-        pj=j+1;
-        while(posValida(m, pi, pj)){
-            L1.add(new Regla(pi,pj));
+
+        pi = i + 1;
+        pj = j + 1;
+        while (posValida(m, pi, pj)) {
+            L1.add(new Regla(pi, pj));
             pi++;
             pj++;
         }
-        
-        pi=i;
-        pj=j+1;
-        while(posValida(m, pi, pj)){
-            L1.add(new Regla(pi,pj));
+
+        pi = i;
+        pj = j + 1;
+        while (posValida(m, pi, pj)) {
+            L1.add(new Regla(pi, pj));
             pj++;
         }
-        
-        pi=i-1;
-        pj=j+1;
-        while(posValida(m, pi, pj)){
-            L1.add(new Regla(pi,pj));
+
+        pi = i - 1;
+        pj = j + 1;
+        while (posValida(m, pi, pj)) {
+            L1.add(new Regla(pi, pj));
             pi--;
             pj++;
         }
-        
-        
 
         return L1;
     }
-    
-     private void reinaA(int m[][], int i, int j, int paso, LinkedList<Point> acum) {
+
+    private void reinaA(int m[][], int i, int j, int paso, LinkedList<Point> acum) {
 
         if (!posValida(m, i, j)) {
             return;
@@ -565,6 +580,7 @@ public class Laberinto {
         // ANADIR ESTO
         //mostrar(m);
         steps.add(paso);
+        c++;
         acum.addLast(new Point(i, j));
         int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
         results.add(copy);
@@ -573,18 +589,20 @@ public class Laberinto {
         }
 
         LinkedList<Regla> L1 = reglasAplicablesReina(m, i, j);
-        while (!L1.isEmpty()) {
-            Regla R = L1.removeFirst();
-            reinaA(m, R.fil, R.col, paso + 1, acum);
-            m[R.fil][R.col] = 0;
+        if (c < answers || answers == -1) {
+            while (!L1.isEmpty()) {
+                Regla R = L1.removeFirst();
+                reinaA(m, R.fil, R.col, paso + 1, acum);
+                m[R.fil][R.col] = 0;
 
+            }
         }
 
         // ANADIR ESTO
         acum.removeLast();
     }
-     
-     private void reinaB(int m[][], int i, int j, int paso, LinkedList<Point> acum) {
+
+    private void reinaB(int m[][], int i, int j, int paso, LinkedList<Point> acum) {
 
         if (!posValida(m, i, j)) {
             return;
@@ -596,7 +614,7 @@ public class Laberinto {
             // ANADIR ESTO
             //mostrar(m);
             steps.add(paso);
-            
+            c++;
             int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
             results.add(copy);
             for (int k = 0; k < acum.size(); ++k) {
@@ -604,19 +622,20 @@ public class Laberinto {
             }
         }
         LinkedList<Regla> L1 = reglasAplicablesReina(m, i, j);
-        while (!L1.isEmpty()) {
-            Regla R = L1.removeFirst();
-            reinaB(m, R.fil, R.col, paso + 1, acum);
-            m[R.fil][R.col] = 0;
+        if (c < answers || answers == -1) {
+            while (!L1.isEmpty()) {
+                Regla R = L1.removeFirst();
+                reinaB(m, R.fil, R.col, paso + 1, acum);
+                m[R.fil][R.col] = 0;
 
+            }
         }
 
         // ANADIR ESTO
         acum.removeLast();
     }
-     
-     
-     private void reinaC(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+    private void reinaC(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
 
         if (!posValida(m, i, j)) {
             return;
@@ -639,41 +658,61 @@ public class Laberinto {
         }
 
         LinkedList<Regla> L1 = reglasAplicablesReina(m, i, j);
-        while (!L1.isEmpty()) {
-            Regla R = L1.removeFirst();
-            reinaC(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
-            m[R.fil][R.col] = 0;
+        if (c < answers || answers == -1) {
+            while (!L1.isEmpty()) {
+                Regla R = L1.removeFirst();
+                reinaC(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                m[R.fil][R.col] = 0;
 
+            }
         }
 
         // ANADIR ESTO
         acum.removeLast();
     }
-     
-     /* //////////////////////////////////////////////////////////////////////////////
+
+    /* //////////////////////////////////////////////////////////////////////////////
      Problemas con Heuristica
-     ///////////////////////////////////////////////////////////////////////////////*/ 
-     
-     public static Regla mejorRegla(LinkedList<Regla> L,int ifin,int jfin){
+     ///////////////////////////////////////////////////////////////////////////////*/
+    public static Regla mejorRegla(LinkedList<Regla> L, int ifin, int jfin) {
         int k = 0;
         int minimo = Integer.MAX_VALUE;
-        for(int i=0;i<L.size();++i){
+        for (int i = 0; i < L.size(); ++i) {
             int ival = L.get(i).fil;
             int jval = L.get(i).col;
             int m = manhattan(ival, jval, ifin, jfin);
-            if(m<minimo){
-                minimo=m;
-                k=i;
+            if (m <= minimo) {
+                minimo = m;
+                k = i;
             }
         }
         return L.remove(k);
-     }
-     
-     private static int manhattan(int a,int b,int c,int d){
-         return Math.abs(c-a)+Math.abs(d-b);
-     }
-     
-      private void laberintoHeuristica(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+    }
+
+    public static Regla mejorReglaPtoP(LinkedList<Regla> L, int ifin, int jfin) {
+        int k = 0;
+        double minimo = Double.MAX_VALUE;
+        for (int i = 0; i < L.size(); ++i) {
+            int ival = L.get(i).fil;
+            int jval = L.get(i).col;
+            double m = PtoP(ival, jval, ifin, jfin);
+            if (m <= minimo) {
+                minimo = m;
+                k = i;
+            }
+        }
+        return L.remove(k);
+    }
+
+    private static int manhattan(int a, int b, int c, int d) {
+        return Math.abs(c - a) + Math.abs(d - b);
+    }
+
+    private static double PtoP(double x1, double y1, double x2, double y2) {
+        return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+    }
+
+    private void laberintoHeuristica(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
 
         if (!posValida(m, i, j)) {
             return;
@@ -694,16 +733,55 @@ public class Laberinto {
             }
 
         }
+        if (c < answers || answers == -1) {
+            LinkedList<Regla> L1 = reglasAplicables(m, i, j);
+            while (!L1.isEmpty()) {
+                Regla R = mejorRegla(L1, ifin, jfin);
+                laberintoHeuristica(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                m[R.fil][R.col] = 0;
 
-        LinkedList<Regla> L1 = reglasAplicables(m, i, j);
-        while (!L1.isEmpty()) {
-            Regla R = mejorRegla(L1,ifin,jfin);
-            laberintoHeuristica(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
-            m[R.fil][R.col] = 0;
-
+            }
         }
 
         // ANADIR ESTO
         acum.removeLast();
+
     }
+
+    private void laberintoHeuristica2(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
+        }
+
+        // ANADIR ESTO
+        acum.addLast(new Point(i, j));
+
+        m[i][j] = paso;
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+
+        }
+        if (c < answers || answers == -1) {
+            LinkedList<Regla> L1 = reglasAplicables(m, i, j);
+            while (!L1.isEmpty()) {
+                Regla R = mejorReglaPtoP(L1, ifin, jfin);
+                laberintoHeuristica2(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                m[R.fil][R.col] = 0;
+
+            }
+        }
+
+        // ANADIR ESTO
+        acum.removeLast();
+
+    }
+
 }

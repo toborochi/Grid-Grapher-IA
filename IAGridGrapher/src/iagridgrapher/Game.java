@@ -11,7 +11,6 @@ import Input.MouseInput;
 import States.StateManager;
 
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;

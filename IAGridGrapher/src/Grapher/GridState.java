@@ -57,6 +57,7 @@ public class GridState implements State {
     public int currentOption = 0;
     int res = 0;
     int stp = 0;
+    int answers = 1;
 
     Person c;
 
@@ -143,6 +144,14 @@ public class GridState implements State {
 
         }
 
+        if (KeyInput.wasPressed(KeyEvent.VK_UP)) {
+            answers++;
+        }
+
+        if (KeyInput.wasPressed(KeyEvent.VK_DOWN) && answers - 1 >= -1) {
+            answers--;
+        }
+
         if (KeyInput.wasPressed(KeyEvent.VK_RIGHT) && current + 1 < 4) {
             current++;
         }
@@ -163,15 +172,17 @@ public class GridState implements State {
         }
 
         if (KeyInput.wasPressed(KeyEvent.VK_S)) {
-            showNumbers=!showNumbers;
+            showNumbers = !showNumbers;
         }
-        
+
         if (KeyInput.wasPressed(KeyEvent.VK_ENTER)) {
 
             if (startP != null && endP != null) {
 
                 // INICIAR LA ANIMACION
                 instrucciones = new LinkedList<>();
+                laberinto.setAnswers(answers);
+                maze[startP.x][startP.y]=0;
                 instrucciones = laberinto.Instrucciones(maze, startP.x, startP.y, endP.x, endP.y);
                 c.setX(-90);
                 c.setY(-90);
@@ -184,6 +195,7 @@ public class GridState implements State {
                 }
 
             } else {
+                start = false;
                 JOptionPane.showMessageDialog(null, "Falta Inicio y/o Final");
             }
 
@@ -207,11 +219,16 @@ public class GridState implements State {
         if (MouseInput.click && mouse_xpos >= 0 && mouse_xpos < cols && mouse_ypos >= 0 && mouse_ypos < rows) {
 
             if (Level.START.getValue() == level.getValue()) {
-
+                if(startP!=null){
+                    maze[startP.x][startP.y]=0;
+                }
                 startP = new Point(mouse_ypos, mouse_xpos);
 
             } else if (Level.END.getValue() == level.getValue()) {
 
+                if(endP!=null){
+                    maze[endP.x][endP.y]=0;
+                }
                 endP = new Point(mouse_ypos, mouse_xpos);
 
             } else {
@@ -224,7 +241,9 @@ public class GridState implements State {
                     endP = null;
                 }
 
-                maze[mouse_ypos][mouse_xpos] = level.getValue();
+                if (Level.START.getValue() != level.getValue() && Level.END.getValue() != level.getValue()) {
+                    maze[mouse_ypos][mouse_xpos] = level.getValue();
+                }
 
             }
 
@@ -259,21 +278,20 @@ public class GridState implements State {
                 if (maze[j][i] == Level.FLOOR.getValue()) {
                     pisos.get(0).render(g, (double) 64 * i, (double) 64 * j, 0);
                 } else {
-                    if(startP==null){
+                    if (startP == null) {
                         sprite3.render(g, (double) 64 * i, (double) 64 * j, 0);
-                    }else{
-                       
-                        if(startP.x==j && startP.y==i){
+                    } else {
+
+                        if (startP.x == j && startP.y == i) {
                             //System.out.println(""+startP.x+","+startP.y);
                             //System.out.println(""+i+","+j);
                             pisos.get(0).render(g, (double) 64 * i, (double) 64 * j, 0);
-                        }else{
+                        } else {
                             sprite3.render(g, (double) 64 * i, (double) 64 * j, 0);
                         }
-                       
-                        
+
                     }
-                    
+
                 }
 
                 if (i == mouse_xpos && j == mouse_ypos) {
@@ -333,6 +351,7 @@ public class GridState implements State {
         }
 
         Fonts.drawString(g, new Font("Courier New", Font.BOLD, 16), Color.GREEN, arrow1 + level.name() + arrow2, 64 * 10 + 32);
+        Fonts.drawString(g, new Font("Courier New", Font.BOLD, 16), Color.GREEN, "ANSWERS: " + answers, 500, 672);
 
     }
 
