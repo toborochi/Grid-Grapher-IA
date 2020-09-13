@@ -54,7 +54,7 @@ public class Laberinto {
 
         // laberintoA(m, i, j, 1,L);
         // laberintoB(m, i, j, 1,L);
-        // laberintoC(m, i, j, ifin, jfin, 1, L);
+         laberintoC(m, i, j, ifin, jfin, 1, L);
         
         // torreA(m, i, j, 1,L);
         // torreB(m, i, j, 1,L);

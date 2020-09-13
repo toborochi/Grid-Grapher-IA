@@ -15,22 +15,14 @@ import Rendering.Texture;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import States.State;
 import States.StateManager;
 import Utils.Fonts;
 import iagridgrapher.Game;
 import java.awt.Point;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 public class GridState implements State {
@@ -39,6 +31,7 @@ public class GridState implements State {
     Queue<Point> instrucciones;
     Point startP;
     Point endP;
+    boolean showNumbers = true;
 
     public enum Level {
         FLOOR(0),
@@ -116,15 +109,24 @@ public class GridState implements State {
     boolean start = false;
     double t = 0;
 
+    double lerp(double a, double b, double f) {
+        return a + f * (b - a);
+    }
+
     @Override
     public void tick(StateManager manager, double delta) {
 
         if (start && instrucciones.size() > 0) {
+            Point pp = instrucciones.element();
+            c.setX(lerp(c.getX(), pp.y * 64, 0.25));
+            c.setY(lerp(c.getY(), pp.x * 64, 0.25));
             t += delta;
             if (t >= 8 && instrucciones.size() > 0) {
                 Point p = instrucciones.remove();
-                c.setX(p.y * 64);
-                c.setY(p.x * 64);
+                c.setX(lerp(c.getX(), p.y * 64, 0.25));
+                c.setY(lerp(c.getY(), p.x * 64, 0.25));
+                //c.setX(p.y * 64);
+                //c.setY(p.x * 64);
                 stp++;
                 if (stp == laberinto.steps.get(res)) {
                     //TOMAR SCREENSHOT
@@ -160,6 +162,10 @@ public class GridState implements State {
             endP = null;
         }
 
+        if (KeyInput.wasPressed(KeyEvent.VK_S)) {
+            showNumbers=!showNumbers;
+        }
+        
         if (KeyInput.wasPressed(KeyEvent.VK_ENTER)) {
 
             if (startP != null && endP != null) {
@@ -210,6 +216,14 @@ public class GridState implements State {
 
             } else {
 
+                if (startP != null && mouse_ypos == startP.x && mouse_xpos == startP.y) {
+                    startP = null;
+                }
+
+                if (endP != null && mouse_ypos == endP.x && mouse_xpos == endP.y) {
+                    endP = null;
+                }
+
                 maze[mouse_ypos][mouse_xpos] = level.getValue();
 
             }
@@ -245,19 +259,44 @@ public class GridState implements State {
                 if (maze[j][i] == Level.FLOOR.getValue()) {
                     pisos.get(0).render(g, (double) 64 * i, (double) 64 * j, 0);
                 } else {
-                    sprite3.render(g, (double) 64 * i, (double) 64 * j, 0);
+                    if(startP==null){
+                        sprite3.render(g, (double) 64 * i, (double) 64 * j, 0);
+                    }else{
+                       
+                        if(startP.x==i && startP.y==j){
+                            //System.out.println(""+startP.x+","+startP.y);
+                            //System.out.println(""+i+","+j);
+                            pisos.get(0).render(g, (double) 64 * i, (double) 64 * j, 0);
+                        }else{
+                            sprite3.render(g, (double) 64 * i, (double) 64 * j, 0);
+                        }
+                       
+                        
+                    }
+                    
                 }
 
                 if (i == mouse_xpos && j == mouse_ypos) {
                     sprite2.render(g, (double) 64 * i, (double) 64 * j, 0);
                 }
-
+                int offset = 8;
                 if (!start) {
                     int v = maze[j][i];
-                    Fonts.drawString(g, new Font("Courier New", Font.BOLD, 24), Color.white, "" + v, i * 64 + 32, j * 64 + 32);
+                    if (showNumbers) {
+                        Fonts.drawString(g, new Font("Courier New", Font.BOLD, 32), Color.white, "" + v, i * 64 + 32 - offset, j * 64 + 32 + offset);
+                    }
                 } else {
                     int v = laberinto.results.get(res)[j][i];
-                    Fonts.drawString(g, new Font("Courier New", Font.BOLD, 24), Color.white, "" + v, i * 64 + 32, j * 64 + 32);
+                    float s = (float) v / laberinto.steps.get(res);
+
+                    if (v > 0) {
+                        g.setColor(Color.getHSBColor(s * 0.33f, 1, 1));
+                        g.fillRect(i * 64, j * 64, 64, 64);
+                    }
+
+                    if (showNumbers) {
+                        Fonts.drawString(g, new Font("Courier New", Font.BOLD, 32), Color.white, "" + v, i * 64 + 32 - offset, j * 64 + 32 + offset);
+                    }
                 }
             }
 
@@ -296,7 +335,5 @@ public class GridState implements State {
         Fonts.drawString(g, new Font("Courier New", Font.BOLD, 16), Color.GREEN, arrow1 + level.name() + arrow2, 64 * 10 + 32);
 
     }
-
-   
 
 }
