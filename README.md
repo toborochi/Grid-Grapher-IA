@@ -20,8 +20,11 @@ Algunas de las implementaciones hechas en el proyecto (_SH_: Sin Heurística, _C
 
 
 ## Teclas
-* <kbd>🡐 </kbd> <kbd>🡒</kbd> Cambiar entre **Piso, Pared, Punto Partida** y **Punto Llegada**.
+* <kbd>←</kbd> <kbd>→</kbd> Cambiar entre **Piso, Pared, Punto Partida** y **Punto Llegada**.
+* <kbd>↑</kbd> <kbd>↓</kbd> Número de respuestas (-1 para ver todas).
 * <kbd>S</kbd> Mostrar números.
+* <kbd>Enter</kbd> Comenzar la simulacion.
+
 
 ## Features
 * Animación del camino de un punto de origen a un punto de partida.
