@@ -58,7 +58,8 @@ public class GridState implements State {
     int res = 0;
     int stp = 0;
     int answers = 1;
-
+    int steps = 0;
+    
     Person c;
 
     LinkedList<Sprite> pisos = new LinkedList<>();
@@ -151,6 +152,16 @@ public class GridState implements State {
         if (KeyInput.wasPressed(KeyEvent.VK_DOWN) && answers - 1 >= -1) {
             answers--;
         }
+        
+        
+        if (KeyInput.wasPressed(KeyEvent.VK_Q)) {
+            steps++;
+        }
+
+        if (KeyInput.wasPressed(KeyEvent.VK_A) && steps - 1 >= 0) {
+            steps--;
+        }
+        
 
         if (KeyInput.wasPressed(KeyEvent.VK_RIGHT) && current + 1 < 4) {
             current++;
@@ -160,12 +171,10 @@ public class GridState implements State {
             current--;
         }
 
-        if (KeyInput.wasPressed(KeyEvent.VK_R)) {
-            maze = new int[rows][cols];
-            start = false;
-        }
+        
 
         if (KeyInput.wasPressed(KeyEvent.VK_R)) {
+            start = false;
             maze = new int[rows][cols];
             startP = null;
             endP = null;
@@ -182,6 +191,7 @@ public class GridState implements State {
                 // INICIAR LA ANIMACION
                 instrucciones = new LinkedList<>();
                 laberinto.setAnswers(answers);
+                laberinto.setSteps(steps);
                 maze[startP.x][startP.y]=0;
                 instrucciones = laberinto.Instrucciones(maze, startP.x, startP.y, endP.x, endP.y);
                 c.setX(-90);
@@ -352,6 +362,7 @@ public class GridState implements State {
 
         Fonts.drawString(g, new Font("Courier New", Font.BOLD, 16), Color.GREEN, arrow1 + level.name() + arrow2, 64 * 10 + 32);
         Fonts.drawString(g, new Font("Courier New", Font.BOLD, 16), Color.GREEN, "ANSWERS: " + answers, 500, 672);
+        Fonts.drawString(g, new Font("Courier New", Font.BOLD, 16), Color.GREEN, "STEPS: " + steps, 32, 672);
 
     }
 

@@ -12,9 +12,14 @@ public class Laberinto {
     public LinkedList<Integer> steps = new LinkedList<>();
     int c = 0;
     public int answers = 0;
+    public int maxSteps = 0;
 
     public void setAnswers(int m) {
         answers = m;
+    }
+    
+    public void setSteps(int m) {
+        maxSteps = m;
     }
 
     private void mostrar(int m[][]) {
@@ -24,6 +29,7 @@ public class Laberinto {
             }
             System.out.println("");
         }
+        System.out.println("--------------");
     }
 
     int floodSize = 0;
@@ -61,6 +67,7 @@ public class Laberinto {
         ins = new LinkedList();
         c = 0;
 
+        // SIN HEURISITCA / TODAS LAS SOLUCIONES
         // laberintoA(m, i, j, 1,L);
         // laberintoB(m, i, j, 1,L);
         // laberintoC(m, i, j, ifin, jfin, 1, L);
@@ -73,15 +80,35 @@ public class Laberinto {
         // reinaA(m, i, j, 1,L);
         // reinaB(m, i, j, 1,L);
         // reinaC(m, i, j, ifin, jfin, 1, L);
-        // laberintoHeuristica(m, i, j, ifin, jfin, 1, L);
-        laberintoHeuristica2(m, i, j, ifin, jfin, 1, L);
+        
+        // CON HEURISITCA
+        // laberintoHeuristica(m, i, j, ifin, jfin, 1, L);  // Manhattan 
+        // laberintoHeuristica2(m, i, j, ifin, jfin, 1, L); // PtoP
+        // laberintoHeuristica3(m, i, j, ifin, jfin, 1, L); // Distancia Vertical/Horizontal
+        
+        // reyHeuristica(m, i, j, ifin, jfin, 1, L);  // Manhattan 
+        // reyHeuristica2(m, i, j, ifin, jfin, 1, L);  // PtoP
+        // reyHeuristica3(m, i, j, ifin, jfin, 1, L);  //  Distancia Vertical/Horizontal
 
+        // caballoHeuristica(m, i, j, ifin, jfin, 1, L);  // Manhattan 
+        // caballoHeuristica2(m, i, j, ifin, jfin, 1, L);  // PtoP
+        // caballoHeuristica3(m, i, j, ifin, jfin, 1, L);  //  Distancia Vertical/Horizontal
+
+        // alfilHeuristica(m, i, j, ifin, jfin, 1, L);  // Manhattan 
+        // alfilHeuristica2(m, i, j, ifin, jfin, 1, L);  // PtoP
+        // alfilHeuristica3(m, i, j, ifin, jfin, 1, L);  //  Distancia Vertical/Horizontal
+
+        // reinaHeuristica(m, i, j, ifin, jfin, 1, L);  // Manhattan 
+         reinaHeuristica2(m, i, j, ifin, jfin, 1, L);  // PtoP
+        // reinaHeuristica3(m, i, j, ifin, jfin, 1, L);  //  Distancia Vertical/Horizontal
+        
         System.out.println("InicioX: " + i);
         System.out.println("InicioY: " + j);
         System.out.println("FinY: " + ifin);
         System.out.println("FinY: " + jfin);
         System.out.println("Soluciones: " + c);
         System.out.println("Movimientos: " + ins.size());
+        System.out.println(ins);
         return ins;
     }
 
@@ -704,6 +731,21 @@ public class Laberinto {
         return L.remove(k);
     }
 
+    public static Regla mejorReglaDistance(LinkedList<Regla> L, int ifin, int jfin) {
+        int k = 0;
+        double minimo = Double.MAX_VALUE;
+        for (int i = 0; i < L.size(); ++i) {
+            int ival = L.get(i).fil;
+            int jval = L.get(i).col;
+            double m = distanceRect(ival, jval, ifin, jfin);
+            if (m <= minimo) {
+                minimo = m;
+                k = i;
+            }
+        }
+        return L.remove(k);
+    }
+
     private static int manhattan(int a, int b, int c, int d) {
         return Math.abs(c - a) + Math.abs(d - b);
     }
@@ -712,15 +754,21 @@ public class Laberinto {
         return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     }
 
+    private static double distanceRect(double x1, double y1, double x2, double y2) {
+        return Math.min(Math.abs(x2 - x1), Math.abs(y2 - y1));
+    }
+
     private void laberintoHeuristica(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
 
-        if (!posValida(m, i, j)) {
+        if (!posValida(m, i, j) && paso>25) {
             return;
         }
 
         // ANADIR ESTO
-        acum.addLast(new Point(i, j));
-
+        Point p = new Point(i, j);
+        acum.addLast(p);
+        //mostrar(m);
+        
         m[i][j] = paso;
         if (i == ifin && j == jfin) {
             c++;
@@ -731,20 +779,21 @@ public class Laberinto {
             for (int k = 0; k < acum.size(); ++k) {
                 ins.add((Point) acum.get(k).clone());
             }
-
+            return;
         }
-        if (c < answers || answers == -1) {
-            LinkedList<Regla> L1 = reglasAplicables(m, i, j);
-            while (!L1.isEmpty()) {
-                Regla R = mejorRegla(L1, ifin, jfin);
+
+        LinkedList<Regla> L1 = reglasAplicables(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorRegla(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
                 laberintoHeuristica(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                // ANADIR ESTO
+                acum.removeLast();
                 m[R.fil][R.col] = 0;
-
             }
-        }
+            
 
-        // ANADIR ESTO
-        acum.removeLast();
+        }
 
     }
 
@@ -755,7 +804,8 @@ public class Laberinto {
         }
 
         // ANADIR ESTO
-        acum.addLast(new Point(i, j));
+        Point p = new Point(i, j);
+        acum.addLast(p);
 
         m[i][j] = paso;
         if (i == ifin && j == jfin) {
@@ -767,20 +817,595 @@ public class Laberinto {
             for (int k = 0; k < acum.size(); ++k) {
                 ins.add((Point) acum.get(k).clone());
             }
+            return;
+        }
+
+        LinkedList<Regla> L1 = reglasAplicables(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorReglaPtoP(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
+                laberintoHeuristica2(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                // ANADIR ESTO
+                acum.removeLast();
+            }
+            m[R.fil][R.col] = 0;
 
         }
-        if (c < answers || answers == -1) {
-            LinkedList<Regla> L1 = reglasAplicables(m, i, j);
-            while (!L1.isEmpty()) {
-                Regla R = mejorReglaPtoP(L1, ifin, jfin);
-                laberintoHeuristica2(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
-                m[R.fil][R.col] = 0;
 
-            }
+    }
+
+    private void laberintoHeuristica3(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
         }
 
         // ANADIR ESTO
-        acum.removeLast();
+        Point p = new Point(i, j);
+        acum.addLast(p);
+
+        m[i][j] = paso;
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+            return;
+        }
+
+        LinkedList<Regla> L1 = reglasAplicables(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorReglaDistance(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
+                laberintoHeuristica3(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                // ANADIR ESTO
+                acum.removeLast();
+            }
+            m[R.fil][R.col] = 0;
+
+        }
+
+    }
+
+    private LinkedList<Regla> reglasAplicablesRey(int m[][], int i, int j) {
+        LinkedList<Regla> L1 = new LinkedList();
+        if (posValida(m, i, j - 1)) {
+            L1.add(new Regla(i, j - 1));
+        }
+        if (posValida(m, i - 1, j - 1)) {
+            L1.add(new Regla(i - 1, j - 1));
+        }
+
+        if (posValida(m, i - 1, j)) {
+            L1.add(new Regla(i - 1, j));
+        }
+
+        if (posValida(m, i - 1, j + 1)) {
+            L1.add(new Regla(i - 1, j + 1));
+        }
+
+        if (posValida(m, i, j + 1)) {
+            L1.add(new Regla(i, j + 1));
+        }
+
+        if (posValida(m, i + 1, j + 1)) {
+            L1.add(new Regla(i + 1, j + 1));
+        }
+
+        if (posValida(m, i + 1, j)) {
+            L1.add(new Regla(i + 1, j));
+        }
+
+        if (posValida(m, i + 1, j - 1)) {
+            L1.add(new Regla(i + 1, j - 1));
+        }
+
+        return L1;
+    }
+
+    private void reyHeuristica(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
+        }
+
+        // ANADIR ESTO
+        Point p = new Point(i, j);
+        acum.addLast(p);
+
+        m[i][j] = paso;
+        //mostrar(m);
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+            return;
+        }
+
+        LinkedList<Regla> L1 = reglasAplicablesRey(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorRegla(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
+                reyHeuristica(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                //ANADIR ESTO
+                acum.removeLast();
+            }
+            m[R.fil][R.col] = 0;
+
+        }
+
+    }
+    
+    private void reyHeuristica2(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
+        }
+
+        // ANADIR ESTO
+        Point p = new Point(i, j);
+        acum.addLast(p);
+
+        m[i][j] = paso;
+        //mostrar(m);
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+            return;
+        }
+
+        LinkedList<Regla> L1 = reglasAplicablesRey(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorReglaPtoP(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
+                reyHeuristica2(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                //ANADIR ESTO
+                acum.removeLast();
+            }
+            m[R.fil][R.col] = 0;
+
+        }
+
+    }
+    
+    private void reyHeuristica3(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
+        }
+
+        // ANADIR ESTO
+        Point p = new Point(i, j);
+        acum.addLast(p);
+
+        m[i][j] = paso;
+        //mostrar(m);
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+            return;
+        }
+
+        LinkedList<Regla> L1 = reglasAplicablesRey(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorReglaDistance(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
+                reyHeuristica3(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                //ANADIR ESTO
+                acum.removeLast();
+            }
+            m[R.fil][R.col] = 0;
+
+        }
+
+    }
+    
+    public LinkedList<Regla> reglasAplicablesCaballo(int m[][], int i, int j) {
+        LinkedList<Regla> L1 = new LinkedList();
+        
+        
+        
+        // Izquierda
+        if (posValida(m, i+1, j - 2)) {
+            L1.add(new Regla(i+1, j - 2));
+        }
+        
+        if (posValida(m, i-1, j - 2)) {
+            L1.add(new Regla(i-1, j - 2));
+        }
+        
+        // Arriba
+        if (posValida(m, i - 2, j-1)) {
+            L1.add(new Regla(i - 2, j-1));
+        }
+        
+        if (posValida(m, i - 2, j+1)) {
+            L1.add(new Regla(i - 2, j+1));
+        }
+        
+        // Derecha
+        if (posValida(m, i-1, j + 2)) {
+            L1.add(new Regla(i-1, j + 2));
+        }
+        
+        if (posValida(m, i+1, j + 2)) {
+            L1.add(new Regla(i+1, j + 2));
+        }
+        
+        // Abajo
+        if (posValida(m, i + 2, j+1)) {
+            L1.add(new Regla(i + 2, j+1));
+        }
+        
+        if (posValida(m, i + 2, j-1)) {
+            L1.add(new Regla(i + 2, j-1));
+        }
+
+        return L1;
+    }
+    
+    private void caballoHeuristica(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
+        }
+
+        // ANADIR ESTO
+        Point p = new Point(i, j);
+        acum.addLast(p);
+
+        m[i][j] = paso;
+        //mostrar(m);
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+            return;
+        }
+
+        LinkedList<Regla> L1 = reglasAplicablesCaballo(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorRegla(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
+                caballoHeuristica(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                //ANADIR ESTO
+                acum.removeLast();
+            }
+            m[R.fil][R.col] = 0;
+
+        }
+
+    }
+    
+    private void caballoHeuristica2(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
+        }
+
+        // ANADIR ESTO
+        Point p = new Point(i, j);
+        acum.addLast(p);
+
+        m[i][j] = paso;
+        //mostrar(m);
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+            return;
+        }
+
+        LinkedList<Regla> L1 = reglasAplicablesCaballo(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorReglaPtoP(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
+                caballoHeuristica2(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                //ANADIR ESTO
+                acum.removeLast();
+            }
+            m[R.fil][R.col] = 0;
+
+        }
+
+    }
+    
+    private void caballoHeuristica3(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
+        }
+
+        // ANADIR ESTO
+        Point p = new Point(i, j);
+        acum.addLast(p);
+
+        m[i][j] = paso;
+        //mostrar(m);
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+            return;
+        }
+
+        LinkedList<Regla> L1 = reglasAplicablesCaballo(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorReglaDistance(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
+                caballoHeuristica3(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                //ANADIR ESTO
+                acum.removeLast();
+            }
+            m[R.fil][R.col] = 0;
+
+        }
+
+    }
+    
+    
+    private void alfilHeuristica(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
+        }
+
+        // ANADIR ESTO
+        Point p = new Point(i, j);
+        acum.addLast(p);
+
+        m[i][j] = paso;
+        //mostrar(m);
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+            return;
+        }
+
+        LinkedList<Regla> L1 = reglasAplicablesAlfil(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorRegla(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
+                alfilHeuristica(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                //ANADIR ESTO
+                acum.removeLast();
+            }
+            m[R.fil][R.col] = 0;
+
+        }
+
+    }
+    
+    private void alfilHeuristica2(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
+        }
+
+        // ANADIR ESTO
+        Point p = new Point(i, j);
+        acum.addLast(p);
+
+        m[i][j] = paso;
+        //mostrar(m);
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+            return;
+        }
+
+        LinkedList<Regla> L1 = reglasAplicablesAlfil(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorReglaPtoP(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
+                alfilHeuristica2(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                //ANADIR ESTO
+                acum.removeLast();
+            }
+            m[R.fil][R.col] = 0;
+
+        }
+
+    }
+    
+    private void alfilHeuristica3(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
+        }
+
+        // ANADIR ESTO
+        Point p = new Point(i, j);
+        acum.addLast(p);
+
+        m[i][j] = paso;
+        //mostrar(m);
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+            return;
+        }
+
+        LinkedList<Regla> L1 = reglasAplicablesAlfil(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorReglaDistance(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
+                alfilHeuristica3(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                //ANADIR ESTO
+                acum.removeLast();
+            }
+            m[R.fil][R.col] = 0;
+
+        }
+
+    }
+    
+    
+    private void reinaHeuristica(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
+        }
+
+        // ANADIR ESTO
+        Point p = new Point(i, j);
+        acum.addLast(p);
+
+        m[i][j] = paso;
+        //mostrar(m);
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+            return;
+        }
+
+        LinkedList<Regla> L1 = reglasAplicablesReina(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorRegla(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
+                reinaHeuristica(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                //ANADIR ESTO
+                acum.removeLast();
+            }
+            m[R.fil][R.col] = 0;
+
+        }
+
+    }
+    
+    private void reinaHeuristica2(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
+        }
+
+        // ANADIR ESTO
+        Point p = new Point(i, j);
+        acum.addLast(p);
+
+        m[i][j] = paso;
+        //mostrar(m);
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+            return;
+        }
+
+        LinkedList<Regla> L1 = reglasAplicablesReina(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorReglaPtoP(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
+                reinaHeuristica2(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                //ANADIR ESTO
+                acum.removeLast();
+            }
+            m[R.fil][R.col] = 0;
+
+        }
+
+    }
+    
+    private void reinaHeuristica3(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
+        }
+
+        // ANADIR ESTO
+        Point p = new Point(i, j);
+        acum.addLast(p);
+
+        m[i][j] = paso;
+        //mostrar(m);
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+            return;
+        }
+
+        LinkedList<Regla> L1 = reglasAplicablesReina(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorReglaDistance(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
+                reinaHeuristica3(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                //ANADIR ESTO
+                acum.removeLast();
+            }
+            m[R.fil][R.col] = 0;
+
+        }
 
     }
 
