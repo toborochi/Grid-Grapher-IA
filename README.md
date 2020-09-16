@@ -8,9 +8,10 @@ Algunas de las implementaciones hechas en el proyecto (_SH_: Sin Heurística, _C
 
 * Laberinto _(SH & CH)_
 * Torre _(SH)_
-* Alfil _(SH)_
-* Reina _(SH)_
-
+* Alfil _(SH & CH)_
+* Reina _(SH & CH)_
+* Rey _(SH & CH)_
+* Caballo _(SH & CH)_
 
 
 
