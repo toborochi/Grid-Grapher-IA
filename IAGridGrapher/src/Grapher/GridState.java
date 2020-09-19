@@ -59,6 +59,7 @@ public class GridState implements State {
     int stp = 0;
     int answers = 1;
     int steps = 0;
+    int scale = 1;
     
     Person c;
 
@@ -169,6 +170,14 @@ public class GridState implements State {
 
         if (KeyInput.wasPressed(KeyEvent.VK_LEFT) && current - 1 >= 0) {
             current--;
+        }
+        
+        if (KeyInput.wasPressed(KeyEvent.VK_E)) {
+            scale++;
+        }
+
+        if (KeyInput.wasPressed(KeyEvent.VK_D) && scale - 1 >= 0) {
+            scale--;
         }
 
         
@@ -286,18 +295,18 @@ public class GridState implements State {
             for (int i = 0; i < cols; ++i) {
 
                 if (maze[j][i] == Level.FLOOR.getValue()) {
-                    pisos.get(0).render(g, (double) 64 * i, (double) 64 * j, 0);
+                    pisos.get(0).render(g, (double) 64 * i, (double) 64 * j, 0,1);
                 } else {
                     if (startP == null) {
-                        sprite3.render(g, (double) 64 * i, (double) 64 * j, 0);
+                        sprite3.render(g, (double) 64 * i, (double) 64 * j, 0,1);
                     } else {
 
                         if (startP.x == j && startP.y == i) {
                             //System.out.println(""+startP.x+","+startP.y);
                             //System.out.println(""+i+","+j);
-                            pisos.get(0).render(g, (double) 64 * i, (double) 64 * j, 0);
+                            pisos.get(0).render(g, (double) 64 * i, (double) 64 * j, 0,1);
                         } else {
-                            sprite3.render(g, (double) 64 * i, (double) 64 * j, 0);
+                            sprite3.render(g, (double) 64 * i, (double) 64 * j, 0,1);
                         }
 
                     }
@@ -305,13 +314,13 @@ public class GridState implements State {
                 }
 
                 if (i == mouse_xpos && j == mouse_ypos) {
-                    sprite2.render(g, (double) 64 * i, (double) 64 * j, 0);
+                    sprite2.render(g, (double) 64 * i, (double) 64 * j, 0,1);
                 }
                 int offset = 8;
                 if (!start) {
                     int v = maze[j][i];
                     if (showNumbers) {
-                        Fonts.drawString(g, new Font("Courier New", Font.BOLD, 32), Color.white, "" + v, i * 64 + 32 - offset, j * 64 + 32 + offset);
+                        Fonts.drawString(g, new Font("Courier New", Font.BOLD, 40), Color.white, "" + v, i * 64 + 32 - offset, j * 64 + 32 + offset);
                     }
                 } else {
                     int v = laberinto.results.get(res)[j][i];
@@ -323,7 +332,7 @@ public class GridState implements State {
                     }
 
                     if (showNumbers) {
-                        Fonts.drawString(g, new Font("Courier New", Font.BOLD, 32), Color.white, "" + v, i * 64 + 32 - offset, j * 64 + 32 + offset);
+                        Fonts.drawString(g, new Font("Courier New", Font.BOLD, 40), Color.white, "" + v, i * 64 + 32 - offset, j * 64 + 32 + offset);
                     }
                 }
             }
@@ -331,11 +340,11 @@ public class GridState implements State {
         }
 
         if (startP != null) {
-            sprite4.render(g, (double) startP.y * 64, (double) startP.x * 64, 0);
+            sprite4.render(g, (double) startP.y * 64, (double) startP.x * 64, 0,1);
         }
 
         if (endP != null) {
-            sprite5.render(g, (double) endP.y * 64, (double) endP.x * 64, 0);
+            sprite5.render(g, (double) endP.y * 64, (double) endP.x * 64, 0,1);
         }
 
         String arrow1 = "", arrow2 = "";
@@ -363,6 +372,7 @@ public class GridState implements State {
         Fonts.drawString(g, new Font("Courier New", Font.BOLD, 16), Color.GREEN, arrow1 + level.name() + arrow2, 64 * 10 + 32);
         Fonts.drawString(g, new Font("Courier New", Font.BOLD, 16), Color.GREEN, "ANSWERS: " + answers, 500, 672);
         Fonts.drawString(g, new Font("Courier New", Font.BOLD, 16), Color.GREEN, "STEPS: " + steps, 32, 672);
+        Fonts.drawString(g, new Font("Courier New", Font.BOLD, 16), Color.GREEN, "SCALE: " + scale, 160, 672);
 
     }
 

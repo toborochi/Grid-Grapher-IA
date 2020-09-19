@@ -83,7 +83,7 @@ public class Laberinto {
         
         // CON HEURISITCA
         // laberintoHeuristica(m, i, j, ifin, jfin, 1, L);  // Manhattan 
-        // laberintoHeuristica2(m, i, j, ifin, jfin, 1, L); // PtoP
+         //laberintoHeuristica2(m, i, j, ifin, jfin, 1, L); // PtoP
         // laberintoHeuristica3(m, i, j, ifin, jfin, 1, L); // Distancia Vertical/Horizontal
         
         // reyHeuristica(m, i, j, ifin, jfin, 1, L);  // Manhattan 
@@ -95,12 +95,16 @@ public class Laberinto {
         // caballoHeuristica3(m, i, j, ifin, jfin, 1, L);  //  Distancia Vertical/Horizontal
 
         // alfilHeuristica(m, i, j, ifin, jfin, 1, L);  // Manhattan 
-        // alfilHeuristica2(m, i, j, ifin, jfin, 1, L);  // PtoP
+         alfilHeuristica2(m, i, j, ifin, jfin, 1, L);  // PtoP
         // alfilHeuristica3(m, i, j, ifin, jfin, 1, L);  //  Distancia Vertical/Horizontal
 
         // reinaHeuristica(m, i, j, ifin, jfin, 1, L);  // Manhattan 
-         reinaHeuristica2(m, i, j, ifin, jfin, 1, L);  // PtoP
+        // reinaHeuristica2(m, i, j, ifin, jfin, 1, L);  // PtoP
         // reinaHeuristica3(m, i, j, ifin, jfin, 1, L);  //  Distancia Vertical/Horizontal
+        
+        // torreHeuristica(m, i, j, ifin, jfin, 1, L);  // Manhattan 
+         torreHeuristica2(m, i, j, ifin, jfin, 1, L);  // PtoP
+        // torreHeuristica3(m, i, j, ifin, jfin, 1, L);  //  Distancia Vertical/Horizontal
         
         System.out.println("InicioX: " + i);
         System.out.println("InicioY: " + j);
@@ -1400,6 +1404,122 @@ public class Laberinto {
             Regla R = mejorReglaDistance(L1, ifin, jfin);
             if ((c < answers || answers == -1) && paso<maxSteps) {
                 reinaHeuristica3(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                //ANADIR ESTO
+                acum.removeLast();
+            }
+            m[R.fil][R.col] = 0;
+
+        }
+
+    }
+    
+    
+    
+    private void torreHeuristica(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
+        }
+
+        // ANADIR ESTO
+        Point p = new Point(i, j);
+        acum.addLast(p);
+
+        m[i][j] = paso;
+        //mostrar(m);
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+            return;
+        }
+
+        LinkedList<Regla> L1 = reglasAplicablesTorre(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorRegla(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
+                torreHeuristica(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                //ANADIR ESTO
+                acum.removeLast();
+            }
+            m[R.fil][R.col] = 0;
+
+        }
+
+    }
+    
+    private void torreHeuristica2(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
+        }
+
+        // ANADIR ESTO
+        Point p = new Point(i, j);
+        acum.addLast(p);
+
+        m[i][j] = paso;
+        //mostrar(m);
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+            return;
+        }
+
+        LinkedList<Regla> L1 = reglasAplicablesTorre(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorReglaPtoP(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
+                torreHeuristica2(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
+                //ANADIR ESTO
+                acum.removeLast();
+            }
+            m[R.fil][R.col] = 0;
+
+        }
+
+    }
+    
+    private void torreHeuristica3(int m[][], int i, int j, int ifin, int jfin, int paso, LinkedList<Point> acum) {
+
+        if (!posValida(m, i, j)) {
+            return;
+        }
+
+        // ANADIR ESTO
+        Point p = new Point(i, j);
+        acum.addLast(p);
+
+        m[i][j] = paso;
+        //mostrar(m);
+        if (i == ifin && j == jfin) {
+            c++;
+            steps.add(paso);
+            int[][] copy = Arrays.stream(m).map(int[]::clone).toArray(int[][]::new);
+            results.add(copy);
+            //mostrar(copy);
+            for (int k = 0; k < acum.size(); ++k) {
+                ins.add((Point) acum.get(k).clone());
+            }
+            return;
+        }
+
+        LinkedList<Regla> L1 = reglasAplicablesTorre(m, i, j);
+        while (!L1.isEmpty()) {
+            Regla R = mejorReglaDistance(L1, ifin, jfin);
+            if ((c < answers || answers == -1) && paso<maxSteps) {
+                torreHeuristica3(m, R.fil, R.col, ifin, jfin, paso + 1, acum);
                 //ANADIR ESTO
                 acum.removeLast();
             }

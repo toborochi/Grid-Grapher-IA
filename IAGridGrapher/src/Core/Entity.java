@@ -11,7 +11,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 public abstract class Entity {
-    protected double x,y,rotation=0;
+    protected double x,y,rotation=0,scale=1;
     protected Texture texture;
     protected SpriteSheet sheet;
     protected Sprite sprite;
@@ -33,7 +33,7 @@ public abstract class Entity {
           
     public abstract void tick();
     public void render(Graphics2D g) {
-        sprite.render(g, x-width/2, y-height/2,rotation);
+        sprite.render(g, x-width/2, y-height/2,rotation,scale);
     }
 
     public void setX(double x) {

@@ -12,7 +12,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 public abstract class ThreadEntity extends GameObject{
-    protected double x,y,rotation=0;
+    protected double x,y,rotation=0,scale=1;
     protected Texture texture;
     protected SpriteSheet sheet;
     protected Sprite sprite;
@@ -35,7 +35,7 @@ public abstract class ThreadEntity extends GameObject{
     public abstract void tick();
 
     public void render(Graphics2D g) {
-        sprite.render(g, x, y,0);
+        sprite.render(g, x, y,0,scale);
         
         /*
         if(GameState.debug){

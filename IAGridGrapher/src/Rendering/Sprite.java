@@ -18,10 +18,10 @@ public class Sprite {
                 spriteSheet.getHeight());
     }
     
-    public void render(Graphics2D g,double x,double y,double angle){
+    public void render(Graphics2D g,double x,double y,double angle,double scale){
         AffineTransform at = new AffineTransform();
         at.rotate((angle*Math.PI)/180.0, x + image.getWidth()/2,y+ image.getHeight()/2);
-        //at.scale(2, 2);
+        at.scale(scale,scale);
         at.translate(x, y);
         
         g.drawImage(image, at, null);
