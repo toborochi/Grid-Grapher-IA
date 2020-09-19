@@ -8,9 +8,10 @@ Algunas de las implementaciones hechas en el proyecto (_SH_: Sin Heurística, _C
 
 * Laberinto _(SH & CH)_
 * Torre _(SH)_
-* Alfil _(SH)_
-* Reina _(SH)_
-
+* Alfil _(SH & CH)_
+* Reina _(SH & CH)_
+* Rey _(SH & CH)_
+* Caballo _(SH & CH)_
 
 
 
@@ -24,7 +25,7 @@ Algunas de las implementaciones hechas en el proyecto (_SH_: Sin Heurística, _C
 * <kbd>↑</kbd> <kbd>↓</kbd> Número de respuestas (-1 para ver todas).
 * <kbd>S</kbd> Mostrar números.
 * <kbd>Enter</kbd> Comenzar la simulacion.
-
+* <kbd>Q</kbd> <kbd>A</kbd> Número de pasos.
 
 ## Features
 * Animación del camino de un punto de origen a un punto de partida.
